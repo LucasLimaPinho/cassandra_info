@@ -1,0 +1,54 @@
+tar -xf apache-cassandra-3.11.6-bin.tar.gz
+vim /home/cloudera/Downloads/apache-cassandra-3.11.6-bin.tar.gz/conf/cassandra.yaml 
+
+# principal arquivo de configuração do Cassandra onde se
+# define a forma do partitioner, número de microintervalos para tokes dos virtual nodes, tipo de snitch, tempo de cache dos dados, etc.
+
+# Garantindo permissão para alguns diretórios
+
+sudo mkdir /var/lib/cassandra
+sudo mkdir /var/log/cassandra
+sudo chown -R $USER:$GROUP /var/lib/cassandra
+sudo chown -R $USER:$GROUP /var/log/cassandra
+
+# Run Cassandra
+
+bin/cassandra -f
+
+# checa o status dos nós do cluster da aplicação Cassandra
+# Lista os nós, seus IDs, sua posição em datacenterm o rack e seu endingpoint para o token range
+# UN -> U stands for "UP" and "N" stands for NORMAL related to the State that can be Normal/Leaving/Joining/Moving
+# Também a carga do nó
+
+
+bin/nodetool status 
+
+# Informações específicas sobre o nó 127.0.0.1
+# Irá trazer informações sobre:
+#				intervalo de tokens (vnode) que ele se apropria
+# 				ID
+#				Se Gossip está ativo (comunicação interna entre os nós a cada segundo - default 1 nó se comunica com 3 a cada 1 seg)
+#				Se Thift está ativo (comunicação externa com alguma aplicação)
+#				Se Native Transport está ativo
+#				Load
+#				Generation Number
+#				Uptime (seconds)
+#				DataCenter
+#				Rack
+#				Exceptions
+#				Key Cache: size, capacity, hits, requests, recent hit rate, save period in seconds
+#				Row Cache: size, capacity, hits, requests, recent hit rate, save period in seconds
+
+bin/nodetool info 127.0.0.1
+
+# Por default, usando Vnodes, cada nó é responsável por 256 token ranges. Utilizando nodetool ring, podemos obter os endpoints de cada token range para cada nó
+# nodetool ring is used to output all the tokens of a node.To view status info of a node use "nodetool status" instead.
+
+bin/nodetool ring
+
+
+cd /var/log/cassandra
+ls #system.log
+vim system.log
+
+
